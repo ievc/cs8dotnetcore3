@@ -25,6 +25,8 @@ namespace BitwiseAndShiftOperators
             WriteLine($"a * 8 = {a * 8}");
             // 0000 0011 right-shift b by one bit column
             WriteLine($"b >> 1 = {b >> 1}");
+
+            
         }
     }
 }

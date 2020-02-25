@@ -8,6 +8,9 @@
 		},
 		{
 			"path": "BooleanOperators"
+		},
+		{
+			"path": "SelectionStatements"
 		}
 	],
 	"settings": {}
