@@ -58,6 +58,7 @@ namespace SelectionStatements
             string path = @"d:\Projects\Education\cs8dotnetcore3\Chapter03\";
             Stream s = File.Open(Path.Combine(path, "file.txt"), FileMode.OpenOrCreate);
             string message = string.Empty;
+            
             switch (s)
             {
                 case FileStream writeableFile when s.CanWrite:
@@ -80,6 +81,17 @@ namespace SelectionStatements
                 break;
             }
             WriteLine(message);
+
+            var message2 = s switch
+            {
+                FileStream writeableFile when s.CanWrite => "The stream is a file that I can write too",
+                FileStream readOnlyFild => "The stream is a readonly file",
+                MemoryStream ms => "The stream is a memory address",
+                null => "The stream is null",
+                _ => "The stream is other type"
+            };
+
+          
 
         }
     }
