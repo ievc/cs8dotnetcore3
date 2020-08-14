@@ -4,7 +4,7 @@ using static System.Console;
 
 namespace Packt.Shared
 {
-    public class Person
+    public class Person : IComparable<Person>
     {
         // fields
         public string Name;
@@ -55,6 +55,39 @@ namespace Packt.Shared
                 if (localNumber < 1) return 1;
                 return localNumber * localFactorial(localNumber - 1);
             }
+        }
+
+        // working with delegates
+
+        // event delegate field
+        public event EventHandler Shout;
+        
+        //data field
+        public int AngerLevel;
+
+        public void Poke()
+        {
+            AngerLevel++;
+            if(AngerLevel>=3)
+            {
+                // if something is listening
+                if (Shout != null)
+                {
+                    // then call the delegate
+                    Shout(this, EventArgs.Empty);
+                }
+            }
+        }
+
+        public int CompareTo(Person other)
+        {
+            return Name.CompareTo(other.Name);
+        }
+
+        // overridden methods
+        public override string ToString()
+        {
+            return $"{Name} is a {base.ToString()}";
         }
     }
 }
