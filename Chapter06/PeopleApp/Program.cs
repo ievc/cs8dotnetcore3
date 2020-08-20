@@ -170,7 +170,39 @@ namespace PeopleApp
                 WriteLine($"{nameof(aliceInPerson)} AS an Employee");
                 // do something with aliceAsEmployee
             }
+
+
+            WriteLine();
+            WriteLine("Inheriting exeption");
+            try
+            {
+                aliceAsEmployee.TimeTravel(new DateTime(1999, 12, 31));
+                aliceAsEmployee.TimeTravel(new DateTime(1950, 12, 25));
+            }
+                catch (PersonException ex)
+            {
+                WriteLine(ex.Message);
+            }
+
+            WriteLine("---------------------");
+            WriteLine("Extention methods");
+
+            string email1 = "pamela@test.com";
+            string email2 = "ian&test.com";
+            WriteLine( "{0} is a valid e-mail address: {1}",
+                arg0: email1,
+                arg1: StringExtensions.IsValidEmail(email1));
+            WriteLine("{0} is a valid e-mail address: {1}",
+                arg0: email2,
+                arg1: StringExtensions.IsValidEmail(email2));
             
+            WriteLine("{0} is a valid e-mail address: {1}",
+                arg0: email1,
+                arg1: email1.IsValidEmail());
+            WriteLine("{0} is a valid e-mail address: {1}",
+                arg0: email2,
+                arg1: email2.IsValidEmail());
+
         }
     }
 }
