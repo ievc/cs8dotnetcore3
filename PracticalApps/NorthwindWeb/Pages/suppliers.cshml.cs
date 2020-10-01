@@ -10,6 +10,9 @@ namespace NorthwindWeb.Pages
     {
         private Northwind db;
 
+        [BindProperty]
+        public Supplier Supplier { get; set; }
+
         public SuppliersModel (Northwind injectedContext)
         {
             db = injectedContext;
@@ -22,9 +25,6 @@ namespace NorthwindWeb.Pages
             //Suppliers = new[] {"Alpha Co", "Beta Limited", "Gamma Corp"};
             Suppliers = db.Suppliers.Select(s=>s.CompanyName);
         }
-
-        [BindProperty]
-        public Supplier Supplier { get; set; }
 
         public IActionResult OnPost()
         {
