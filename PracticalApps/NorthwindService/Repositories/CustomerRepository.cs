@@ -73,22 +73,45 @@ namespace NorthwindService.Repositories
             Customer old;
             if (customerCache.TryGetValue(id, out old))
             {
-                
+                if (customerCache.TryUpdate(id, c, old))
+                {
+                    return c;
+                }
             }
+            return null;
         }
 
-        public Task<bool?> DeleteAsync(string id)
+        public async Task<Customer> UpdateAsync(string id, Customer c)
         {
-            throw new System.NotImplementedException();
+            // Normalize customer id
+            id = id.ToUpper();
+            c.CustomerID = c.CustomerID.ToUpper();
+            
+            // update in database
+            db.Customers.Update(c);
+            int affected = await db.SaveChangesAsync();
+            if (affected == 1)
+            {
+                // update in cache
+                UpdateCache(id, c);
+            }
+
+            return null;
         }
-
         
-
-        
-
-        public Task<Customer> UpdateAsync(string id, Customer c)
+        public async Task<bool?> DeleteAsync(string id)
         {
-            throw new System.NotImplementedException();
+            id = id.ToUpper();
+            Customer c = db.Customers.Find(id);
+            db.Customers.Remove(c);
+            int affected = await db.SaveChangesAsync();
+            if(affected == 1)
+            {
+                // try to remove from cache
+                customerCache.TryRemove(id, out c);
+            }
+
+            return null;
         }
     }
 }
