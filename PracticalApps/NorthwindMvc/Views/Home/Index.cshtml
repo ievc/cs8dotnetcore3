@@ -60,6 +60,10 @@
     <div class="col-md-12">
         <h1>Northwind</h1>
         <p class="lead">We have had @Model.VisitorCount visitors this month</p>
+        <form asp-action="ProductsThatCostMoreThan" method="get">
+            <input name="price" placeholder="Enter a product price" />
+            <input type="submit" />
+        </form>
         <h2>Products</h2>
         <div id="newpaper">
             <ul>
