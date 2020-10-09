@@ -16,6 +16,10 @@ using Packt.Shared;
 using Microsoft.EntityFrameworkCore;
 using static System.Console;
 using Microsoft.AspNetCore.Mvc.Formatters;
+using NorthwindService.Repositories;
+
+using Swashbuckle.AspNetCore.Swagger;
+using Swashbuckle.AspNetCore.SwaggerUI;
 
 namespace NorthwindService
 {
@@ -31,7 +35,6 @@ namespace NorthwindService
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-
             //services.AddControllers();
             services.AddControllers(options =>
                 {
@@ -58,15 +61,28 @@ namespace NorthwindService
             .SetCompatibilityVersion(CompatibilityVersion.Version_3_0);
 
 
-            services.AddSwaggerGen(c =>
+            //services.AddSwaggerGen(c =>
+            //{
+            //    c.SwaggerDoc("v1", new OpenApiInfo { Title = "NorthwindService", Version = "v1" });
+            //});
+
+            // Register the Swagger generator and define a Swagger document
+            // for Northwind service
+            services.AddSwaggerGen(options =>
             {
-                c.SwaggerDoc("v1", new OpenApiInfo { Title = "NorthwindService", Version = "v1" });
+                options.SwaggerDoc(name: "v1", info: new OpenApiInfo { Title = "Northwind Service API", Version = "v1" });
             });
+
             
             string databasePath = Path.Combine("..", "Northwind.db");
             services.AddDbContext<Northwind>(options =>
                 options.UseSqlite($"Data Source={databasePath}")
             );
+
+            services.AddScoped<ICustomerRepository, CustomerRepository>();
+            
+            
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -75,8 +91,14 @@ namespace NorthwindService
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
+                //app.UseSwagger();
+                //app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "NorthwindService v1"));
                 app.UseSwagger();
-                app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "NorthwindService v1"));
+                app.UseSwaggerUI(options =>
+                {
+                    options.SwaggerEndpoint("/swagger/v1/swagger.json", "Northwind Service API Version 1");
+                    options.SupportedSubmitMethods(new[] { SubmitMethod.Get, SubmitMethod.Post, SubmitMethod.Put, SubmitMethod.Delete });
+                });
             }
 
             app.UseHttpsRedirection();
@@ -89,6 +111,8 @@ namespace NorthwindService
             {
                 endpoints.MapControllers();
             });
+
+            
         }
     }
 }
