@@ -119,7 +119,7 @@ namespace NorthwindService
 
             app.UseAuthorization();
 
-            app.Use(next => (context) =>
+            /*app.Use(next => (context) =>
             {
                 var endpoint = context.GetEndpoint();
                 if (endpoint != null)
@@ -131,7 +131,7 @@ namespace NorthwindService
                     );
                 }
                 return next(context);
-            });
+            });*/
 
 
             app.UseEndpoints(endpoints =>
