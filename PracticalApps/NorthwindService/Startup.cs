@@ -20,6 +20,9 @@ using NorthwindService.Repositories;
 
 using Swashbuckle.AspNetCore.Swagger;
 using Swashbuckle.AspNetCore.SwaggerUI;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Routing;
+
 
 namespace NorthwindService
 {
@@ -35,7 +38,8 @@ namespace NorthwindService
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            //services.AddControllers();
+            services.AddCors();
+
             services.AddControllers(options =>
                 {
                     WriteLine("Default output formatters:");
@@ -80,6 +84,8 @@ namespace NorthwindService
             );
 
             services.AddScoped<ICustomerRepository, CustomerRepository>();
+
+            services.AddHealthChecks().AddDbContextCheck<Northwind>();
             
             
 
@@ -105,14 +111,35 @@ namespace NorthwindService
 
             app.UseRouting();
 
+            app.UseCors(options =>
+            {
+                options.WithMethods("GET", "POST", "PUT", "DELETE");
+                options.WithOrigins("https://localhost:5002"); // For mvc client
+            });
+
             app.UseAuthorization();
+
+            app.Use(next => (context) =>
+            {
+                var endpoint = context.GetEndpoint();
+                if (endpoint != null)
+                {
+                    WriteLine("*** Name: {0}; Route: {1}; Metadata: {2}",
+                        arg0: endpoint.DisplayName,
+                        arg1: (endpoint as RouteEndpoint)?.RoutePattern,
+                        arg2: string.Join(", ", endpoint.Metadata)
+                    );
+                }
+                return next(context);
+            });
+
 
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
             });
 
-            
+            app.UseHealthChecks(path: "/howdoyoufeel");
         }
     }
 }

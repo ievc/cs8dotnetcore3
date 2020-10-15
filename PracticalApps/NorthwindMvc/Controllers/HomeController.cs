@@ -8,19 +8,23 @@ using Microsoft.Extensions.Logging;
 using NorthwindMvc.Models;
 using Packt.Shared;
 using Microsoft.EntityFrameworkCore;
-using System.Threading.Tasks;
+using System.Net.Http;
+using Newtonsoft.Json;
+
 
 namespace NorthwindMvc.Controllers
 {
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
+        private readonly IHttpClientFactory clientFactory;
         private Northwind db;
 
-        public HomeController(ILogger<HomeController> logger, Northwind injectedContext)
+        public HomeController(ILogger<HomeController> logger, Northwind injectedContext, IHttpClientFactory httpClientFactory)
         {
             _logger = logger;
             db = injectedContext;
+            clientFactory = httpClientFactory;
         }
 
         public async Task<IActionResult> Index()
@@ -101,6 +105,29 @@ namespace NorthwindMvc.Controllers
             return View(model); // pass model to view
         }
 
+        public async Task<IActionResult> Customers(string country)
+        {
+            string url;
+            if (string.IsNullOrEmpty(country))
+            {
+                ViewData["Title"] = "All customers worldwide";
+                url = "api/customers";
+            }
+            else
+            {
+                ViewData["Title"] = $"Customers in {country}";
+                url = $"api/customers/?country={country}";
+            }
+            var client = clientFactory.CreateClient(name: "NorthwindService");
+            var request = new HttpRequestMessage(
+                method: HttpMethod.Get,
+                requestUri: url
+            );
 
+            HttpResponseMessage response = await client.SendAsync(request);
+            string jsonString = await response.Content.ReadAsStringAsync();
+            IEnumerable<Customer> model = JsonConvert.DeserializeObject<IEnumerable<Customer>>(jsonString);
+            return View(model);
+        }
     }
 }
